@@ -1,13 +1,13 @@
-import mongoose, { Document, Schema, Model, model } from "mongoose";
-import AuthRole from "../constants/roles.constant";
+import { Document, Schema, Model, model, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import crypto from "crypto";
 import CustomError from "../services/CustomError";
+import { ERROR_MESSAGES, AUTH_ROLES } from "../constants";
 
 export interface IUser extends Document {
-  _id: mongoose.Types.ObjectId;
+  _id: Types.ObjectId;
   name: string;
   email: string;
   photo?: string;
@@ -52,8 +52,8 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      default: AuthRole.USER,
-      enum: [AuthRole.USER, AuthRole.ADMIN],
+      default: AUTH_ROLES.USER,
+      enum: [AUTH_ROLES.USER, AUTH_ROLES.ADMIN],
     },
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
@@ -77,12 +77,12 @@ UserSchema.statics.findUserByToken = async function (resetPasswordToken) {
   );
 
   let userFound = await this.findOne({ forgotPasswordToken });
-  if (!userFound) throw new CustomError("User not found", 404);
+  if (!userFound) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
 
   userFound.forgotPasswordToken = undefined;
   userFound.forgotPasswordExpiry = undefined;
 
-  userFound.save();
+  await userFound.save();
 
   return userFound;
 };
@@ -104,7 +104,7 @@ UserSchema.methods.comparePassword = async function (
 
 //generate jwt token
 UserSchema.methods.generateToken = async function (): Promise<string> {
-  return await jwt.sign({ _id: this._id }, config.JWT_SECRET, {
+  return await jwt.sign({ _id: this._id, role: this.role }, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRY,
   });
 };
@@ -126,4 +126,6 @@ UserSchema.methods.getForgotPasswordToken = async function (): Promise<string> {
 };
 
 // exporting userModal
-export default model<IUser, IUserModel>("User", UserSchema);
+const UserModel: IUserModel = model<IUser, IUserModel>("User", UserSchema);
+
+export default UserModel;

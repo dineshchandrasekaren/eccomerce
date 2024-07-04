@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler";
+import { cloudinary } from "../config/cloudinary.config";
 
-export const test = asyncHandler(async (req: Request, res: Response) => {
-  res.json({
-    success: true,
-    message: "successfully called",
-  });
-});
+export const signup = asyncHandler(async (req: Request, res: Response) => {});
