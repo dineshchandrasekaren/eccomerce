@@ -5,7 +5,7 @@ import helmet from "helmet";
 import router from "./routes";
 import customizedLogger from "./services/customizedLogger";
 import errorHandler from "./middlewares/errorHandler";
-
+import fileUpload from "express-fileupload";
 const app: Application = express();
 
 // logger
@@ -17,6 +17,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 app.use(helmet());
+
+// file upload
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 //route
 app.use("/", router);

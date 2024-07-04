@@ -1,6 +1,4 @@
-const AuthRole = {
+export const AUTH_ROLES = {
   USER: "user",
   ADMIN: "admin",
 };
-
-export default AuthRole;

@@ -1,13 +1,15 @@
 import { connect } from "mongoose";
 import app from "./app";
 import config from "./config";
+import CustomError from "./services/CustomError";
+import cloudinaryConfig from "./config/cloudinary.config";
 
-//callbacks
-const handleError = (err: unknown) => {
-  console.log("ERROR: ", err);
-  throw err;
+//callbacks for error
+const handleError = (err: any) => {
+  throw new CustomError(err.message, 503);
 };
 
+//callback for port listening
 const listeningPort = () => {
   console.log(`server is running at http://localhost:${config.PORT}`);
 };
@@ -18,12 +20,13 @@ const listeningPort = () => {
     await connect(config.MONGOURL);
     console.log("DB connected....");
 
-    //handling error
-    app.on("error", handleError);
-
     //listening port
     app.listen(config.PORT, listeningPort);
+    //handling error
+    app.on("error", handleError);
   } catch (error) {
     handleError(error);
   }
 })();
+
+cloudinaryConfig();

@@ -9,6 +9,7 @@ const config = {
   JWT_EXPIRY: process.env.JWT_EXPIRY || "3h",
   FORGOT_PASSWORD_EXPIRY: process.env.FORGOT_PASSWORD_EXPIRY || "",
   FORGOT_PASSWORD_SECRET: process.env.FORGOT_PASSWORD_SECRET || "",
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || "",
 };
 
 export default config;
