@@ -10,11 +10,11 @@ export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
   email: string;
-  photo: string;
+  photo?: string;
   password: string;
   role: string;
-  forgotPasswordToken: string;
-  forgotPasswordExpiry: string;
+  forgotPasswordToken?: string;
+  forgotPasswordExpiry?: string;
   comparePassword: (password: string) => Promise<boolean>;
   generateToken: () => Promise<string>;
   verifyForgotPasswordToken: () => void;
