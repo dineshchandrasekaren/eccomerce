@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Error, mongo } from "mongoose";
+import CustomError from "../services/CustomError";
 
 type ValidationError = {
   [key: string]: string;
@@ -37,6 +38,12 @@ async function errorHandler(
     // Handle other specific MongoServerError types if needed
     // For example, handle network errors, timeout errors, etc.
     return res.status(500).json({ success: false, message });
+  }
+
+  if (error instanceof CustomError) {
+    return res
+      .status(error.code)
+      .json({ success: false, message: error.message });
   }
   return res
     .status(500)
