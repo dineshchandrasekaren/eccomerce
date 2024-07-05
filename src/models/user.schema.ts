@@ -4,10 +4,9 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 import crypto from "crypto";
 import CustomError from "../services/CustomError";
-import { ERROR_MESSAGES, AUTH_ROLES } from "../constants";
+import { ERROR_MESSAGES, AUTH_ROLES, SCHEMA_IDS } from "../constants";
 
 export interface IUser extends Document {
-  _id: Types.ObjectId;
   name: string;
   email: string;
   photo?: string;
@@ -25,7 +24,7 @@ interface IUserModel extends Model<IUser> {
   findUserByToken(resetPasswordToken: string): Promise<string> | void;
 }
 //creating Schema
-const UserSchema = new Schema<IUser>(
+const UserSchema: Schema<IUser> = new Schema(
   {
     name: {
       type: String,
@@ -48,7 +47,8 @@ const UserSchema = new Schema<IUser>(
       select: false,
     },
     photo: {
-      type: String,
+      type: Types.ObjectId,
+      ref: SCHEMA_IDS.Photo,
     },
     role: {
       type: String,
@@ -94,7 +94,14 @@ UserSchema.pre("save", async function (next): Promise<void> {
   this.password = await bcrypt.hash(this.password, 8);
   return next();
 });
+UserSchema.pre<IUser>("save", async function (this: IUser, next) {
+  // Access current data
+  const currentData = this;
 
+  // Access old data (original document)
+  const oldData = await this.toObject();
+  console.log(oldData);
+});
 // compare password while login
 UserSchema.methods.comparePassword = async function (
   enteredPassword: string
@@ -126,6 +133,9 @@ UserSchema.methods.getForgotPasswordToken = async function (): Promise<string> {
 };
 
 // exporting userModal
-const UserModel: IUserModel = model<IUser, IUserModel>("User", UserSchema);
+const UserModel: IUserModel = model<IUser, IUserModel>(
+  SCHEMA_IDS.User,
+  UserSchema
+);
 
 export default UserModel;

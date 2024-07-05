@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { test } from "../controllers/auth.controller";
+import { signup } from "../controllers/auth.controller";
 
 let router = Router();
 
-router.route("/").get(test);
+router.route("/").post(signup);
 
 export default router;

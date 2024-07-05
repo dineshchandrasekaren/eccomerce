@@ -45,6 +45,8 @@ async function errorHandler(
       .status(error.code)
       .json({ success: false, message: error.message });
   }
+  console.log(error);
+
   return res
     .status(500)
     .json({ success: false, message: "Internal Server Error" });
