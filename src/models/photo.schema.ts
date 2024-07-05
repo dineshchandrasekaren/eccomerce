@@ -94,7 +94,7 @@ photoSchema.statics.deletePhoto = async function (id: Types.ObjectId) {
   );
   if (destroyResult.error)
     throw new CustomError(destroyResult.error, destroyResult.code);
-  return destroyResult.result;
+  return destroyResult.result ? true : false;
 };
 const PhotoModel: IPhotoModel = model<IPhoto, IPhotoModel>(
   SCHEMA_IDS.Photo,
