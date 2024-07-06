@@ -19,6 +19,7 @@ interface IPhotoModel extends Model<IPhoto> {
     file: any
   ) => Promise<Types.ObjectId>;
   deletePhoto: (id: Types.ObjectId) => Promise<boolean>;
+  getPhotoUrlById: (id: Types.ObjectId) => Promise<IPhoto["url"]>;
 }
 
 const photoSchema = new Schema<IPhoto>(
@@ -41,7 +42,11 @@ const photoSchema = new Schema<IPhoto>(
     timestamps: true,
   }
 );
-
+photoSchema.statics.getPhotoById = async function (
+  id: Types.ObjectId
+): Promise<IPhoto["url"]> {
+  return this.findById(id)?.url;
+};
 photoSchema.statics.createAndSave = async function (
   file: any,
   collection: (typeof SCHEMA_VALUES)[number] = "unknown"

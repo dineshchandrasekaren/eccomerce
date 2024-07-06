@@ -5,6 +5,7 @@ import {
   deletePhotoById,
   updatePhotoById,
   addNewPhoto,
+  getPhotoUrlById
 } from "../controllers/photo.controller";
 
 const router = Router();
@@ -16,5 +17,7 @@ router
   .get(getPhotoById)
   .put(updatePhotoById)
   .delete(deletePhotoById);
+
+  router.route('/url/:photoId').get(getPhotoUrlById)
 
 export default router;

@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import PhotoModel from "../models/photo.schema";
 import CustomError from "../services/CustomError";
 import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
-import { Types } from "mongoose";
+import { stringToObjectId } from "../utils/idconvertions.util";
 
 export const addNewPhoto = asyncHandler(async (req: Request, res: Response) => {
   if (!req.files?.photo) throw new CustomError(ERROR_MESSAGES.SEND_PHOTO, 400);
@@ -47,7 +47,7 @@ export const updatePhotoById = asyncHandler(
       );
 
     const updatedPhotoId = await PhotoModel.findAndUpdatePhoto(
-      Types.ObjectId.createFromHexString(photoId),
+      stringToObjectId(photoId),
       req.files.photo
     );
     const photo = await PhotoModel.findById(updatedPhotoId);
@@ -58,14 +58,10 @@ export const updatePhotoById = asyncHandler(
 export const deletePhotoById = asyncHandler(
   async (req: Request, res: Response) => {
     const { photoId = "" } = req.params;
-    if (!photoId || !req.files?.photo)
-      throw new CustomError(
-        !photoId ? ERROR_MESSAGES.ID_NOT_FOUND : ERROR_MESSAGES.SEND_PHOTO,
-        400
-      );
+    if (!photoId) throw new CustomError(ERROR_MESSAGES.ID_NOT_FOUND, 400);
 
     const updatedPhotoId = await PhotoModel.deletePhoto(
-      Types.ObjectId.createFromHexString(photoId)
+      stringToObjectId(photoId)
     );
     if (!updatedPhotoId)
       throw new CustomError(ERROR_MESSAGES.PHOTO_NOT_FOUND, 404);
@@ -73,5 +69,17 @@ export const deletePhotoById = asyncHandler(
     res
       .status(200)
       .json({ success: true, message: "Photo deleted Successfully" });
+  }
+);
+
+export const getPhotoUrlById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { photoId = "" } = req.params;
+    if (!photoId) throw new CustomError(ERROR_MESSAGES.ID_NOT_FOUND, 400);
+    const photoUrl = await PhotoModel.getPhotoUrlById(
+      stringToObjectId(photoId)
+    );
+
+    res.status(200).json({ success: true, url: photoUrl });
   }
 );
