@@ -43,7 +43,10 @@ async function errorHandler(
   if (error instanceof CustomError) {
     return res
       .status(error.code)
-      .json({ success: false, message: error.message });
+      .json({
+        success: false,
+        [error.key ? error.key : "message"]: error.message,
+      });
   }
   console.log(error);
 

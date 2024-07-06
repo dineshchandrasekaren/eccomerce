@@ -1,5 +1,9 @@
 class CustomError extends Error {
-  constructor(public message: string, public code: number) {
+  constructor(
+    public message: string,
+    public code: number,
+    public key?: string
+  ) {
     super(message);
   }
 }
