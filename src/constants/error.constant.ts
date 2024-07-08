@@ -8,4 +8,6 @@ export const ERROR_MESSAGES = {
   SEND_PHOTO: "Please send the photo with key 'photo'",
   INVALID_PASSWORD: "Invalid password",
   INVALID_EMAIL: "Invalid Email",
+  INVALID_OLD_PASSWORD: "Invalid old password",
+  PASSWORD_NOT_MATCH: "Password is not match",
 };

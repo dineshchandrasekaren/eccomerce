@@ -50,5 +50,22 @@ export const deleteUserById = asyncHandler(
 );
 
 export const changePassword = asyncHandler(
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    const { userId, oldPassword, newPassword, confirmPassword } = req.body;
+    const user = await UserModel.findById(userId).populate("+password");
+    if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
+
+    if (!(await user.comparePassword(oldPassword)))
+      throw new CustomError(ERROR_MESSAGES.INVALID_OLD_PASSWORD, 403);
+
+    if (newPassword !== confirmPassword)
+      throw new CustomError(ERROR_MESSAGES.PASSWORD_NOT_MATCH, 403);
+
+    user.password = newPassword;
+    await user.save({
+      validateBeforeSave: true,
+    });
+
+    res.status(200).json({ success: true });
+  }
 );
