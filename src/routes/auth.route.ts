@@ -1,9 +1,16 @@
 import { Router } from "express";
-import { login, signup } from "../controllers/auth.controller";
+import {
+  login,
+  signup,
+  resetPassword,
+  forgotPassword,
+} from "../controllers/auth.controller";
 
-let router = Router();
+const router = Router();
 
 router.route("/signup").post(signup);
 router.route("/login").post(login);
+router.route("/forgotPassword").post(forgotPassword);
+router.route("/password/reset/:token").put(resetPassword);
 
 export default router;

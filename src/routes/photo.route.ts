@@ -5,11 +5,13 @@ import {
   deletePhotoById,
   updatePhotoById,
   addNewPhoto,
-  getPhotoUrlById
+  getPhotoUrlById,
 } from "../controllers/photo.controller";
+import { SCHEMA_IDS } from "../constants";
+import { getByParams } from "../middlewares/params.middleware";
 
 const router = Router();
-
+router.param("photoId", getByParams(SCHEMA_IDS.Photo));
 router.route("/").get(getAllPhotos);
 router.route("/addPhoto").post(addNewPhoto);
 router
@@ -18,6 +20,6 @@ router
   .put(updatePhotoById)
   .delete(deletePhotoById);
 
-  router.route('/url/:photoId').get(getPhotoUrlById)
+router.route("/url/:photoId").get(getPhotoUrlById);
 
 export default router;

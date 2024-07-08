@@ -1,8 +1,8 @@
 import { cloudinary } from "../config/cloudinary.config";
 
-async function uploadFile(file: any, folderName: string = "others") {
+async function uploadFile(file: any, folderName: string) {
   try {
-    let result = await cloudinary.uploader.upload(file.tempFilePath, {
+    const result = await cloudinary.uploader.upload(file.tempFilePath, {
       public_id: `${file.md5}`,
       folder: folderName,
     });
@@ -14,7 +14,7 @@ async function uploadFile(file: any, folderName: string = "others") {
 
 async function destroyFile(public_id: string) {
   try {
-    let result = await cloudinary.uploader.destroy(public_id);
+    const result = await cloudinary.uploader.destroy(public_id);
 
     return { result };
   } catch (e: any) {
