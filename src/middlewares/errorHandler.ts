@@ -27,7 +27,7 @@ async function errorHandler(
   if (error instanceof mongo.MongoServerError) {
     let message = "Database error occurred";
     if (error.code === 11000) {
-      const duplicateKeyErrors: { [key: string]: string } = {};
+      const duplicateKeyErrors: ValidationError = {};
       for (const key in error.keyPattern) {
         duplicateKeyErrors[key] = `${key} already exist.`;
       }
@@ -35,18 +35,14 @@ async function errorHandler(
         .status(400)
         .json({ success: false, errors: duplicateKeyErrors });
     }
-    // Handle other specific MongoServerError types if needed
-    // For example, handle network errors, timeout errors, etc.
     return res.status(500).json({ success: false, message });
   }
 
   if (error instanceof CustomError) {
-    return res
-      .status(error.code)
-      .json({
-        success: false,
-        [error.key ? error.key : "message"]: error.message,
-      });
+    const jsonResponse = error.key
+      ? { success: false, error: { [error.key || "message"]: error.message } }
+      : { success: false, message: error.message };
+    return res.status(error.code).json(jsonResponse);
   }
   console.log(error);
 

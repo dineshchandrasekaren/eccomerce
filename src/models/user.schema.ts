@@ -1,28 +1,12 @@
-import { Document, Schema, Model, model, Types } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import crypto from "crypto";
 import CustomError from "../services/CustomError";
 import { ERROR_MESSAGES, AUTH_ROLES, SCHEMA_IDS } from "../constants";
+import { IUser, IUserModel } from "../types/user";
 
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  photo?: string;
-  password: string;
-  role: string;
-  forgotPasswordToken?: string;
-  forgotPasswordExpiry?: string;
-  comparePassword: (password: string) => Promise<boolean>;
-  generateToken: () => Promise<string>;
-  verifyForgotPasswordToken: () => void;
-}
-// Define static methods interface for UserModel
-interface IUserModel extends Model<IUser> {
-  forgotPasswordHash(token: string): Promise<string>;
-  findUserByToken(resetPasswordToken: string): Promise<string> | void;
-}
 //creating Schema
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -71,7 +55,9 @@ UserSchema.statics.forgotPasswordHash = async function (token) {
     .digest("hex");
 };
 
-UserSchema.statics.findUserByToken = async function (resetPasswordToken) {
+UserSchema.statics.findUserByToken = async function (
+  resetPasswordToken
+): Promise<IUser | void> {
   const forgotPasswordToken = await (this as IUserModel).forgotPasswordHash(
     resetPasswordToken
   );
@@ -135,7 +121,8 @@ UserSchema.methods.getForgotPasswordToken = async function (): Promise<string> {
 // exporting userModal
 const UserModel: IUserModel = model<IUser, IUserModel>(
   SCHEMA_IDS.User,
-  UserSchema
+  UserSchema,
+  SCHEMA_IDS.User
 );
 
 export default UserModel;

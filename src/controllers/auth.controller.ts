@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import PhotoModel from "../models/photo.schema";
-import { Types } from "mongoose";
 import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
-import UserModel, { IUser } from "../models/user.schema";
+import UserModel from "../models/user.schema";
 import CustomError from "../services/CustomError";
 import { cookieToken } from "../utils/cookieToken.util";
+import { isEmail } from "../utils/check.utils";
+import { IUser } from "../types/user";
 
 const collectionFor = SCHEMA_IDS.User;
 
@@ -45,10 +46,35 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     .select("+password");
   if (!User) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 409);
 
-  let matchPassword = await User.comparePassword(password);
-  if (!matchPassword)
+  if (!(await User.comparePassword(password)))
     throw new CustomError(ERROR_MESSAGES.INVALID_PASSWORD, 409, "password");
 
   User.password = "";
   await cookieToken(res, User);
 });
+
+export const forgotPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email = "" } = req.body;
+    if (!(email && isEmail(email)))
+      throw new CustomError(ERROR_MESSAGES.INVALID_EMAIL, 404, "email");
+    const user = await UserModel.findOne({ email });
+    if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
+    const token = await user.getForgotPasswordToken();
+    const resetPasswordUrl = `${req.protocol}://${req.headers.host}/password/reset/${token}`;
+    res.status(200).json({ success: true, resetPasswordUrl });
+  }
+);
+
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { token } = req.params;
+    if (!token) throw new CustomError("Token not found", 400);
+
+    const user = await UserModel.findUserByToken(token);
+    if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
+    res
+      .status(200)
+      .json({ success: true, message: "Password successfully reset" });
+  }
+);

@@ -7,4 +7,5 @@ export const ERROR_MESSAGES = {
   ID_NOT_FOUND: "Id not found",
   SEND_PHOTO: "Please send the photo with key 'photo'",
   INVALID_PASSWORD: "Invalid password",
+  INVALID_EMAIL: "Invalid Email",
 };
