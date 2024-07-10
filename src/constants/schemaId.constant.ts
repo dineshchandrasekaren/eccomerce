@@ -1,6 +1,7 @@
 export const SCHEMA_IDS = {
   User: "User",
   Photo: "Photo",
+  Session: "Session",
   unknown: "unknown",
 };
 

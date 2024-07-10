@@ -5,39 +5,39 @@ import JWT, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
 import UserModel from "../models/user.schema";
 import { ERROR_MESSAGES } from "../constants/error.constant";
+import SessionModel from "../models/session.schema";
 
 export const isAuth = asyncHandler(
   async (req: Request, _: Response, next: NextFunction): Promise<void> => {
-    let token: string = "";
-
-    if (
-      req.header("Authorization")?.startsWith("Bearer ") ||
-      req.cookies.token
-    ) {
-      token =
-        req.header("Authorization")?.replace("Bearer ", "") ||
-        req.cookies.token;
-    }
-
-    if (!token) {
-      throw new CustomError(ERROR_MESSAGES.ACCESS_DENIED, 401);
-    }
-
     try {
-      const decodedJWTPayload = (await JWT.verify(
-        token,
-        config.JWT_SECRET
-      )) as JwtPayload;
+      let token: string = req.header("Authorization")?.startsWith("Bearer ")
+        ? req.header("Authorization")?.replace("Bearer ", "")
+        : req.cookies?.token;
 
-      const User = await UserModel.findById(decodedJWTPayload._id);
-      if (!User) {
+      if (!token) {
         throw new CustomError(ERROR_MESSAGES.ACCESS_DENIED, 401);
       }
+
+      const decodedJWTPayload = (await JWT.verify(
+        token,
+        config.AUTH_SECRET
+      )) as JwtPayload;
+
+      const session = await SessionModel.findOneAndUpdate(
+        { user: decodedJWTPayload._id, token },
+        { lastAccessedAt: Date.now() }
+      );
+
+      if (!session) throw new CustomError(ERROR_MESSAGES.ACCESS_DENIED, 401);
+
       req.body.userId = decodedJWTPayload._id;
       req.body.role = decodedJWTPayload.role;
       next();
-    } catch (error) {
-      throw new CustomError(ERROR_MESSAGES.ACCESS_DENIED, 401);
+    } catch (error: any) {
+      throw new CustomError(
+        error?.message || ERROR_MESSAGES.ACCESS_DENIED,
+        401
+      );
     }
   }
 );
