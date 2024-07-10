@@ -4,8 +4,10 @@
   "description": "This is the backend for selling the product in the website",
   "main": "./dist/index.js",
   "scripts": {
+    "start": "npm run copy && npm run tsc-compile && node ./dist/index.js",
     "dev": "nodemon exec",
-    "copy": "copyfiles -f ./**/templates/* ./dist/templates"
+    "copy": "copyfiles -f ./**/templates/* ./dist/templates",
+    "tsc-compile": "tsc"
   },
   "keywords": [
     "nodejs",

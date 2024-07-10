@@ -41,6 +41,11 @@ const UserSchema: Schema<IUser> = new Schema(
     },
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
+    verifyToken: String,
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -57,7 +62,7 @@ UserSchema.statics.forgotPasswordHash = async function (token) {
 
 UserSchema.statics.findUserByToken = async function (
   resetPasswordToken
-): Promise<IUser | void> {
+): Promise<IUser> {
   const forgotPasswordToken = await (this as IUserModel).forgotPasswordHash(
     resetPasswordToken
   );
@@ -68,11 +73,19 @@ UserSchema.statics.findUserByToken = async function (
   userFound.forgotPasswordToken = undefined;
   userFound.forgotPasswordExpiry = undefined;
 
-  await userFound.save();
-
-  return userFound;
+  return await userFound.save();
 };
-
+UserSchema.methods.emailVerifyToken = async function () {
+  let token = "";
+  if (this.verifyToken) {
+    token = this.verifyToken;
+  } else {
+    token = crypto.randomBytes(20).toString("hex");
+  }
+  this.verifyToken = token;
+  await this.save();
+  return await this.verifyToken;
+};
 //Save hashed password in db
 UserSchema.pre("save", async function (next): Promise<void> {
   const passwordNotChanged = !this.isModified("password");
@@ -80,14 +93,7 @@ UserSchema.pre("save", async function (next): Promise<void> {
   this.password = await bcrypt.hash(this.password, 8);
   return next();
 });
-UserSchema.pre<IUser>("save", async function (this: IUser, next) {
-  // Access current data
-  const currentData = this;
 
-  // Access old data (original document)
-  const oldData = await this.toObject();
-  console.log(oldData);
-});
 // compare password while login
 UserSchema.methods.comparePassword = async function (
   enteredPassword: string
@@ -117,7 +123,7 @@ UserSchema.methods.getForgotPasswordToken = async function (): Promise<string> {
   //add expiry to the token
   this.forgotPasswordExpiry =
     Date.now() + parseInt(config.FORGOT_PASSWORD_EXPIRY) * 60 * 100;
-
+  await this.save();
   // return the token
   return forgotToken;
 };

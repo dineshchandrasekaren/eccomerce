@@ -10,4 +10,5 @@ export const ERROR_MESSAGES = {
   INVALID_EMAIL: "Invalid Email",
   INVALID_OLD_PASSWORD: "Invalid old password",
   PASSWORD_NOT_MATCH: "Password is not match",
+  VERIFY_EMAIL: "Verify your email",
 };

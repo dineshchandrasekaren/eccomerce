@@ -1,6 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import { ISession } from "../types/session";
 import { SCHEMA_IDS } from "../constants";
+import config from "../config";
 
 const SessionSchema = new Schema<ISession>({
   token: { type: String, required: true },
@@ -9,7 +10,7 @@ const SessionSchema = new Schema<ISession>({
     ref: SCHEMA_IDS.User,
     required: true,
   },
-  createdAt: { type: Date, default: Date.now(), expires: "2h" },
+  createdAt: { type: Date, default: Date.now(), expires: config.AUTH_EXPIRY },
   lastAccessedAt: { type: Date, default: Date.now() },
 });
 
