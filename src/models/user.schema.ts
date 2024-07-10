@@ -97,9 +97,13 @@ UserSchema.methods.comparePassword = async function (
 
 //generate jwt token
 UserSchema.methods.generateToken = async function (): Promise<string> {
-  return await jwt.sign({ _id: this._id, role: this.role }, config.JWT_SECRET, {
-    expiresIn: config.JWT_EXPIRY,
-  });
+  return await jwt.sign(
+    { _id: this._id, role: this.role },
+    config.AUTH_SECRET,
+    {
+      expiresIn: config.AUTH_EXPIRY,
+    }
+  );
 };
 
 // forgotPassword token

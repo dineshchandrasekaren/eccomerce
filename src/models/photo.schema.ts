@@ -24,10 +24,11 @@ const photoSchema = new Schema<IPhoto>(
     timestamps: true,
   }
 );
-photoSchema.statics.getPhotoById = async function (
+photoSchema.statics.getPhotoUrlById = async function (
   id: Types.ObjectId
 ): Promise<IPhoto["url"]> {
-  return this.findById(id)?.url;
+  const { url = "" } = await this.findById(id);
+  return url;
 };
 photoSchema.statics.createAndSave = async function (
   file: any,

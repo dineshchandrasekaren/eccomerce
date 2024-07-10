@@ -6,7 +6,6 @@ import UserModel from "../models/user.schema";
 import CustomError from "../services/CustomError";
 import { cookieToken } from "../utils/cookieToken.util";
 import { isEmail } from "../utils/check.utils";
-import { IUser } from "../types/user";
 
 const collectionFor = SCHEMA_IDS.User;
 
@@ -53,6 +52,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   await cookieToken(res, User);
 });
 
+export const logout = asyncHandler(async (req: Request, res: Response) => {});
 export const forgotPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { email = "" } = req.body;

@@ -1,5 +1,5 @@
 {
-    "ignore":["node_modules","dist"],
-    "ext":"ts, json",
-    "exec":"tsc && node ./dist/index.js"
+  "ignore": ["node_modules", "dist"],
+  "ext": "ts, json, ejs",
+  "exec": "npm run copy && echo \"> compiling ts ... \n \" && tsc  && node ./dist/index.js"
 }

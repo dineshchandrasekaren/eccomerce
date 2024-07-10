@@ -4,7 +4,8 @@
   "description": "This is the backend for selling the product in the website",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "nodemon exec"
+    "dev": "nodemon exec",
+    "copy": "copyfiles -f ./**/templates/* ./dist/templates"
   },
   "keywords": [
     "nodejs",
@@ -19,22 +20,28 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-fileupload": "^1.5.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.4",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.14"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
+    "@types/ejs": "^3.1.5",
     "@types/express": "^4.17.21",
     "@types/express-fileupload": "^1.5.0",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^20.14.9"
+    "@types/ms": "^0.7.34",
+    "@types/node": "^20.14.9",
+    "@types/nodemailer": "^6.4.15",
+    "copyfiles": "^2.4.1"
   }
 }
