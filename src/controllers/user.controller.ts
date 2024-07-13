@@ -5,6 +5,7 @@ import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import UserModel from "../models/user.schema";
 import CustomError from "../services/CustomError";
 import { stringToObjectId } from "../utils/idconvertions.util";
+import { Types } from "mongoose";
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
   const user = req.context;
@@ -19,7 +20,10 @@ export const updateUserById = asyncHandler(
   async (req: Request, res: Response) => {
     const allData = req.context;
     const { name = undefined, email = undefined } = req.body;
-    let newData = { ...allData, name, email };
+    let newData: { name: string; email: string; photo?: Types.ObjectId } = {
+      name: name ?? allData.name,
+      email: email ?? allData.email,
+    };
     if (req.files?.photo) {
       if (allData.photo?._id) {
         newData.photo = await PhotoModel.findAndUpdatePhoto(

@@ -11,4 +11,5 @@ export const ERROR_MESSAGES = {
   INVALID_OLD_PASSWORD: "Invalid old password",
   PASSWORD_NOT_MATCH: "Password is not match",
   VERIFY_EMAIL: "Verify your email",
+  ADDRESS_NOT_EXIST: "Address not exist",
 };

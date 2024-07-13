@@ -15,19 +15,28 @@ const UserSchema: Schema<IUser> = new Schema(
       required: [true, "Name is required"],
       minLength: [3, "Name should be atleast 4 characters."],
       maxLength: [60, "Name cannot exceed 60 characters."],
+      set: (name: string) =>
+        name.replace(/\b\w/g, (char) => char.toUpperCase()),
+      trim: true,
     },
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
+      lowercase: true,
       match: [
         /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
         "Please enter valid email e.g., joe@email.com",
       ],
+      trim: true,
     },
     password: {
       type: String,
       required: [true, "password is required"],
+      match: [
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/g,
+        "Password must minimum 6 characters and it includes uppercase lowercase symbol and number",
+      ],
       select: false,
     },
     photo: {
@@ -39,6 +48,13 @@ const UserSchema: Schema<IUser> = new Schema(
       default: AUTH_ROLES.USER,
       enum: [AUTH_ROLES.USER, AUTH_ROLES.ADMIN],
     },
+    purchase: [
+      {
+        type: Types.ObjectId,
+        ref: SCHEMA_IDS.Product,
+        required: true,
+      },
+    ],
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
     verifyToken: String,
@@ -51,7 +67,7 @@ const UserSchema: Schema<IUser> = new Schema(
     timestamps: true,
   }
 );
-
+UserSchema.index({ email: 1 });
 UserSchema.statics.forgotPasswordHash = async function (token) {
   //generate and set a token in database
   return await crypto
