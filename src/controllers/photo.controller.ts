@@ -1,7 +1,7 @@
 import { asyncHandler } from "../middlewares/asyncHandler";
 import { Request, Response } from "express";
 import PhotoModel from "../models/photo.schema";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import { stringToObjectId } from "../utils/idconvertions.util";
 

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Error, mongo } from "mongoose";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 
 type ValidationError = {
   [key: string]: string;

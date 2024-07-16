@@ -1,7 +1,7 @@
 import { connect } from "mongoose";
 import app from "./app";
 import config from "./config";
-import CustomError from "./services/CustomError";
+import CustomError from "./utils/customError.util";
 import cloudinaryConfig from "./config/cloudinary.config";
 
 //callbacks for error

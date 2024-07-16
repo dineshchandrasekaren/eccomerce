@@ -7,6 +7,7 @@ const categorySchema = new Schema<ICategory>(
     name: {
       type: String,
       required: [true, "Please add a category"],
+      unique: true,
       trim: true,
     },
     description: {

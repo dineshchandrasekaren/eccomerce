@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose, { Types } from "mongoose";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 
 export const getByParams =
   (collection: string) =>

@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
 import router from "./routes";
-import customizedLogger from "./services/customizedLogger";
+import customizedLogger from "./middlewares/customizedLogger";
 import errorHandler from "./middlewares/errorHandler";
 import fileUpload from "express-fileupload";
 const app: Application = express();

@@ -3,8 +3,7 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import PhotoModel from "../models/photo.schema";
 import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import UserModel from "../models/user.schema";
-import CustomError from "../services/CustomError";
-import { stringToObjectId } from "../utils/idconvertions.util";
+import CustomError from "../utils/customError.util";
 import { Types } from "mongoose";
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import crypto from "crypto";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 import { ERROR_MESSAGES, AUTH_ROLES, SCHEMA_IDS } from "../constants";
 import { IUser, IUserModel } from "../types/user";
 

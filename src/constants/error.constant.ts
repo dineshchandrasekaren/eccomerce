@@ -12,4 +12,5 @@ export const ERROR_MESSAGES = {
   PASSWORD_NOT_MATCH: "Password is not match",
   VERIFY_EMAIL: "Verify your email",
   ADDRESS_NOT_EXIST: "Address not exist",
+  CATEGORY_NOT_EXIST: "Category not exist",
 };

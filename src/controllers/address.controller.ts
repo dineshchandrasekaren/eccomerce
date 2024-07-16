@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import AddressModel from "../models/address.schema";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 import { ERROR_MESSAGES } from "../constants";
 
 export const addAddress = asyncHandler(async (req: Request, res: Response) => {

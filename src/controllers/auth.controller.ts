@@ -3,7 +3,7 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import PhotoModel from "../models/photo.schema";
 import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import UserModel from "../models/user.schema";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 import { cookieToken } from "../utils/cookieToken.util";
 import { isEmail } from "../utils/check.utils";
 import mailService from "../services/mail.service";

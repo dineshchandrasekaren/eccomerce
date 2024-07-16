@@ -1,7 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import { ERROR_MESSAGES, SCHEMA_IDS, SCHEMA_VALUES } from "../constants";
 import { CloudinaryServices } from "../services/fileupload.service";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 import { IPhoto, IPhotoModel } from "../types/photo";
 
 const photoSchema = new Schema<IPhoto>(

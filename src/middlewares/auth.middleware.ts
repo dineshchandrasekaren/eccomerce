@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import CustomError from "../services/CustomError";
+import CustomError from "../utils/customError.util";
 import { asyncHandler } from "./asyncHandler";
 import JWT, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
