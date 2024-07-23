@@ -77,3 +77,13 @@ export const getAddressById = asyncHandler(
     res.status(200).json({ success: true, address: req.context });
   }
 );
+
+export const getAddressByUserId = asyncHandler(
+  async (req: Request, res: Response) => {
+    let userId = req.params.userId;
+    if (!userId) throw new CustomError("Please provide UserId", 403);
+    let address = await AddressModel.find({ userId });
+    if (!address.length) throw new CustomError("Address not found", 404);
+    res.status(200).json({ success: true, address });
+  }
+);

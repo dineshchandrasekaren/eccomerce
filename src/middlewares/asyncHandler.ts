@@ -4,11 +4,15 @@ type AsyncFunction = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void>;
+) => Promise<void | Response>;
 
 export const asyncHandler =
   (controller: AsyncFunction) =>
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void | Response> => {
     try {
       await controller(req, res, next);
     } catch (error) {

@@ -6,6 +6,7 @@ import {
   addAddress,
   deleteAddress,
   getAddressById,
+  getAddressByUserId,
   updateAddress,
 } from "../controllers/address.controller";
 
@@ -21,5 +22,6 @@ router
   .delete(deleteAddress);
 
 router.route("/create").post(addAddress);
+router.route("/user/:id").get(getAddressByUserId);
 
 export default router;

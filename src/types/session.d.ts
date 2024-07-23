@@ -4,5 +4,6 @@ import { IUser } from "./user";
 export interface ISession extends Document {
   user: Types.ObjectId | IUser;
   token: string;
+  createdAt: Date;
   lastAccessedAt: Date;
 }

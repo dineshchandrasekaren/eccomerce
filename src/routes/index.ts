@@ -1,17 +1,44 @@
 import { Router } from "express";
-import authRoute from "./auth.route";
-import photoRoute from "./photo.route";
-import userRoute from "./user.route";
-import addressRoute from "./address.route";
+import auth from "./auth.route";
+import photo from "./photo.route";
+import user from "./user.route";
+import address from "./address.route";
+import product from "./product.route";
+import category from "./category.route";
+import cart from "./cart.route";
 import { defaultController, test } from "../controllers/notfound.controller";
 const router = Router();
 
-router.use("/auth", authRoute);
-router.use("/photo", photoRoute);
-router.use("/user", userRoute);
-router.use("/address", addressRoute);
+router.use("/auth", auth);
+router.use("/photo", photo);
+router.use("/user", user);
+router.use("/address", address);
+router.use("/product", product);
+router.use("/category", category);
+router.use("/cart", cart);
 
 // testing routes
 router.post("/tests", test);
 router.use("*", defaultController);
 export default router;
+
+// for later use
+// import path from "path";
+
+// const router = Router();
+// const readed = readdirSync(__dirname);
+
+// (async () => {
+//     for (let i = 0; i < readed.length; i++) {
+//       const fileName = readed[i];
+//       if (fileName !== "index.js") {
+//         const route = "/" + fileName.replace(".route.js", "");
+
+//           const fileExport = await import(path.join(__dirname, fileName));
+//           if (fileExport && fileExport.default) {
+//             router.use(route, fileExport.default);
+//           }
+//       }
+//     }
+
+// })();

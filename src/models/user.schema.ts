@@ -7,6 +7,12 @@ import CustomError from "../utils/customError.util";
 import { ERROR_MESSAGES, AUTH_ROLES, SCHEMA_IDS } from "../constants";
 import { IUser, IUserModel } from "../types/user";
 
+const passwordValidator = (password: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password);
+
+const capitalize = (name: string) =>
+  name.replace(/\b\w/g, (char) => char.toUpperCase());
+
 //creating Schema
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -15,8 +21,7 @@ const UserSchema: Schema<IUser> = new Schema(
       required: [true, "Name is required"],
       minLength: [3, "Name should be atleast 4 characters."],
       maxLength: [60, "Name cannot exceed 60 characters."],
-      set: (name: string) =>
-        name.replace(/\b\w/g, (char) => char.toUpperCase()),
+      set: capitalize,
       trim: true,
     },
     email: {
@@ -33,10 +38,11 @@ const UserSchema: Schema<IUser> = new Schema(
     password: {
       type: String,
       required: [true, "password is required"],
-      match: [
-        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/g,
-        "Password must minimum 6 characters and it includes uppercase lowercase symbol and number",
-      ],
+      validate: {
+        validator: passwordValidator,
+        message: (props) =>
+          `${props.value} is not a valid password! Password must contain at least 8 characters, including one number, one uppercase and one lowercase letter.`,
+      },
       select: false,
     },
     photo: {
@@ -48,13 +54,6 @@ const UserSchema: Schema<IUser> = new Schema(
       default: AUTH_ROLES.USER,
       enum: [AUTH_ROLES.USER, AUTH_ROLES.ADMIN],
     },
-    purchase: [
-      {
-        type: Types.ObjectId,
-        ref: SCHEMA_IDS.Product,
-        required: true,
-      },
-    ],
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
     verifyToken: String,
@@ -67,7 +66,10 @@ const UserSchema: Schema<IUser> = new Schema(
     timestamps: true,
   }
 );
+
 UserSchema.index({ email: 1 });
+
+//Statics
 UserSchema.statics.forgotPasswordHash = async function (token) {
   //generate and set a token in database
   return await crypto
@@ -91,6 +93,17 @@ UserSchema.statics.findUserByToken = async function (
 
   return await userFound.save();
 };
+
+//hooks
+//Save hashed password in db
+UserSchema.pre("save", async function (next): Promise<void> {
+  const passwordNotChanged = !this.isModified("password");
+  if (passwordNotChanged) return next();
+  this.password = await bcrypt.hash(this.password, 8);
+  return next();
+});
+
+// methods
 UserSchema.methods.emailVerifyToken = async function () {
   let token = "";
   if (this.verifyToken) {
@@ -102,13 +115,6 @@ UserSchema.methods.emailVerifyToken = async function () {
   await this.save();
   return await this.verifyToken;
 };
-//Save hashed password in db
-UserSchema.pre("save", async function (next): Promise<void> {
-  const passwordNotChanged = !this.isModified("password");
-  if (passwordNotChanged) return next();
-  this.password = await bcrypt.hash(this.password, 8);
-  return next();
-});
 
 // compare password while login
 UserSchema.methods.comparePassword = async function (

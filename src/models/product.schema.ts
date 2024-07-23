@@ -1,18 +1,45 @@
-import { Schema, model } from "mongoose";
-import { IProduct } from "../types/product";
+import { Schema, model, Types } from "mongoose";
+import { IProduct, IReview } from "../types/product";
 import { SCHEMA_IDS } from "../constants";
+
+const reviewSchema = new Schema(
+  {
+    _id: {
+      type: Types.ObjectId,
+      default: new Types.ObjectId(),
+    },
+    review: {
+      type: String,
+      required: [true, "content is required"],
+      maxlength: [1000, "content should not exceed 1000 characters"],
+      trim: true,
+    },
+    user: {
+      type: Types.ObjectId,
+      ref: SCHEMA_IDS.User,
+      required: true,
+    },
+    rating: {
+      type: Number,
+      required: [true, "rating is required"],
+      min: [1, "rating should be between 1 and 5"],
+      max: [5, "rating should be between 1 and 5"],
+    },
+  },
+  { timestamps: true }
+);
 
 const productSchema = new Schema<IProduct>(
   {
     name: {
       type: String,
-      required: [true, "Please add a product name"],
       trim: true,
+      required: [true, "Please add a product name"],
     },
     description: {
       type: String,
-      required: [true, "Please add a product description"],
       trim: true,
+      required: [true, "Please add a product description"],
     },
     price: {
       type: Number,
@@ -20,15 +47,17 @@ const productSchema = new Schema<IProduct>(
       min: 0,
     },
     category: {
-      type: Schema.Types.ObjectId,
+      type: Types.ObjectId,
       ref: SCHEMA_IDS.Category,
-      required: true,
+      required: [true, "Please select a category"],
     },
-    photos: {
-      type: [Schema.Types.ObjectId],
-      ref: SCHEMA_IDS.Photo,
-      required: true,
-    },
+    photos: [
+      {
+        type: Types.ObjectId,
+        ref: SCHEMA_IDS.Photo,
+        required: true,
+      },
+    ],
     stock: {
       type: Number,
       required: [true, "Please add a product stock"],
@@ -39,15 +68,15 @@ const productSchema = new Schema<IProduct>(
       default: 0,
       min: 0,
     },
-    reviews: {
-      type: [Schema.Types.ObjectId],
-      ref: SCHEMA_IDS.Review,
-      required: false,
-    },
+    reviews: [reviewSchema],
   },
   { timestamps: true }
 );
-
+// productSchema.pre(/^find/, function (next) {
+// (this as IProduct).populate("photos");
+// (this as IProduct).populate('photos');
+// next();
+// });
 const ProductModel = model<IProduct>(
   SCHEMA_IDS.Product,
   productSchema,

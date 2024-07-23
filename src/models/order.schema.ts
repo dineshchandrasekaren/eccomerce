@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IOrder } from "../types/order";
 import { SCHEMA_IDS } from "../constants";
+import { cartSchema } from "./cart.schema";
 
 const orderSchema = new Schema<IOrder>(
   {
@@ -14,11 +15,7 @@ const orderSchema = new Schema<IOrder>(
       ref: SCHEMA_IDS.Address,
       required: true,
     },
-    cart: {
-      type: Schema.Types.ObjectId,
-      ref: "Cart",
-      required: true,
-    },
+    cart: cartSchema,
     deliveryCharge: {
       type: Number,
       required: true,

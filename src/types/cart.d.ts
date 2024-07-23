@@ -1,13 +1,15 @@
 import { Document, Types } from "mongoose";
 import { IProduct } from "./product";
 
-export interface ProductInCart extends Document {
+export interface ProductInCart {
   product: Types.ObjectId | IProduct;
-  quantity: number;
+  quantity?: number;
+  price: number;
+  total?: number;
 }
 
 export interface ICart extends Document {
-  userId: Types.ObjectId;
+  user: Types.ObjectId;
   products: ProductInCart[];
-  totalPrice: number;
+  totalPrice?: number;
 }

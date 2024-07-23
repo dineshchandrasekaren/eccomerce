@@ -13,4 +13,6 @@ export const ERROR_MESSAGES = {
   VERIFY_EMAIL: "Verify your email",
   ADDRESS_NOT_EXIST: "Address not exist",
   CATEGORY_NOT_EXIST: "Category not exist",
+  PRODUCT_NOT_EXIST: "Product not exist",
+  CART_NOT_FOUND: "Cart not found",
 };

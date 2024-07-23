@@ -5,7 +5,7 @@ import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import UserModel from "../models/user.schema";
 import CustomError from "../utils/customError.util";
 import { cookieToken } from "../utils/cookieToken.util";
-import { isEmail } from "../utils/check.utils";
+import { isEmail } from "../utils/check.util";
 import mailService from "../services/mail.service";
 import SessionModel from "../models/session.schema";
 import { IUser } from "../types/user";
@@ -67,8 +67,11 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
   const { token: verifyToken } = req.params;
   const user = await UserModel.findOneAndUpdate(
     { verifyToken },
-    { isVerified: true }
-  );
+    { isVerified: true },
+    {
+      new: true,
+    }
+  ).populate("photo", "url");
 
   if (!user) throw new CustomError(ERROR_MESSAGES.INVALID_TOKEN, 400);
   user.verifyToken = undefined;

@@ -3,7 +3,6 @@ import CustomError from "../utils/customError.util";
 import { asyncHandler } from "./asyncHandler";
 import JWT, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
-import UserModel from "../models/user.schema";
 import { ERROR_MESSAGES } from "../constants/error.constant";
 import SessionModel from "../models/session.schema";
 
@@ -25,13 +24,26 @@ export const isAuth = asyncHandler(
 
       const session = await SessionModel.findOneAndUpdate(
         { user: decodedJWTPayload._id, token },
-        { lastAccessedAt: Date.now() }
+        { lastAccessedAt: Date.now() },
+        {
+          runValidators: false,
+        }
       );
 
       if (!session) throw new CustomError(ERROR_MESSAGES.ACCESS_DENIED, 401);
 
-      req.body.userId = decodedJWTPayload._id;
-      req.body.role = decodedJWTPayload.role;
+      Object.defineProperty(req.body, "_id", {
+        value: decodedJWTPayload._id,
+        writable: false,
+        enumerable: false,
+        configurable: false,
+      });
+      Object.defineProperty(req.body, "role", {
+        value: decodedJWTPayload.role,
+        writable: false,
+        configurable: false,
+      });
+
       next();
     } catch (error: any) {
       throw new CustomError(

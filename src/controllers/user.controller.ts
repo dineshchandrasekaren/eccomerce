@@ -7,7 +7,8 @@ import CustomError from "../utils/customError.util";
 import { Types } from "mongoose";
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const user = req.context;
+  const user = { ...req.context.toObject() };
+
   if (req.context.photo) {
     const url = await PhotoModel.getPhotoUrlById(req.context.photo);
     user.photo = { url, _id: req.context.photo };
