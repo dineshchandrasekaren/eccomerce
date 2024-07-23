@@ -65,10 +65,10 @@ export const updateQuantity = asyncHandler(
     );
 
     if (!foundCart) {
-      throw new CustomError("Cart was Cleared or Product Not Found", 401);
+      throw new CustomError(ERROR_MESSAGES.CART_CLEARED, 401);
     }
     await foundCart.save().catch((_err: any) => {
-      throw new CustomError("Cart was Cleared or Product Not Found", 401);
+      throw new CustomError(ERROR_MESSAGES.CART_CLEARED, 401);
     });
     // No need to call save() as findOneAndUpdate already returns updated document
     res.status(200).json({ success: true, cart: foundCart });

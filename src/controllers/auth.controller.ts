@@ -222,7 +222,7 @@ export const resetPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { password, confirmPassword } = req.body;
     const { token } = req.params;
-    if (!token) throw new CustomError("Token not found", 400);
+    if (!token) throw new CustomError(ERROR_MESSAGES.TOKEN_NOT_FOUND, 400);
     if (password !== confirmPassword)
       throw new CustomError(ERROR_MESSAGES.PASSWORD_NOT_MATCH, 403);
     const user = await UserModel.findUserByToken(token);

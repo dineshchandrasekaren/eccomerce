@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import CustomError from "../utils/customError.util";
 import PhotoModel from "../models/photo.schema";
-import { SCHEMA_IDS } from "../constants";
+import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import ProductModel from "../models/product.schema";
 import { IProduct, IReview } from "../types/product";
 import WhereClause from "../utils/whereClause.util";
@@ -112,7 +112,7 @@ export const deleteProduct = asyncHandler(
       for (let i = 0; i < req.context.photos.length; i++) {
         const photoId = req.context.photos[i];
         if (await PhotoModel.deletePhoto(photoId)) {
-          throw new CustomError("Photo not exist", 404);
+          throw new CustomError(ERROR_MESSAGES.PHOTO_NOT_FOUND, 404);
         }
       }
 

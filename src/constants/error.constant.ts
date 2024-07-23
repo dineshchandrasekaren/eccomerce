@@ -1,18 +1,38 @@
-export const ERROR_MESSAGES = {
-  USER_NOT_FOUND: "User not found",
-  USER_ALREADY_EXIST: "User already exist",
-  INVALID_TOKEN: "Invalid token",
-  ACCESS_DENIED: "Access Denied",
-  PHOTO_NOT_FOUND: "Photo not found",
-  ID_NOT_FOUND: "Id not found",
-  SEND_PHOTO: "Please send the photo with key 'photo'",
-  INVALID_PASSWORD: "Invalid password",
-  INVALID_EMAIL: "Invalid Email",
-  INVALID_OLD_PASSWORD: "Invalid old password",
-  PASSWORD_NOT_MATCH: "Password is not match",
-  VERIFY_EMAIL: "Verify your email",
-  ADDRESS_NOT_EXIST: "Address not exist",
-  CATEGORY_NOT_EXIST: "Category not exist",
-  PRODUCT_NOT_EXIST: "Product not exist",
-  CART_NOT_FOUND: "Cart not found",
-};
+export const enum ERROR_MESSAGES {
+  // User-related errors
+  USER_NOT_FOUND = "User not found",
+  USER_ALREADY_EXIST = "User already exists",
+  PROVIDE_USERID = "Please provide UserId",
+  INVALID_PASSWORD = "Invalid password",
+  INVALID_OLD_PASSWORD = "Invalid old password",
+  PASSWORD_NOT_MATCH = "Passwords do not match",
+  INVALID_EMAIL = "Invalid email",
+  VERIFY_EMAIL = "Verify your email",
+
+  // Token-related errors
+  TOKEN_NOT_FOUND = "Token not found",
+  INVALID_TOKEN = "Invalid token",
+
+  // Access-related errors
+  ACCESS_DENIED = "Access denied",
+
+  // Photo-related errors
+  PHOTO_NOT_FOUND = "Photo not found",
+  SEND_PHOTO = "Please send the photo with key 'photo'",
+
+  // ID-related errors
+  ID_NOT_FOUND = "ID not found",
+
+  // Address-related errors
+  ADDRESS_NOT_EXIST = "Address does not exist",
+
+  // Category-related errors
+  CATEGORY_NOT_EXIST = "Category does not exist",
+
+  // Product-related errors
+  PRODUCT_NOT_EXIST = "Product does not exist",
+
+  // Cart-related errors
+  CART_NOT_FOUND = "Cart not found",
+  CART_CLEARED = "Cart was cleared or product not found",
+}
