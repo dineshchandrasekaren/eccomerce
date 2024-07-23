@@ -6,8 +6,6 @@ import {
 } from "mongoose";
 import { ICart, ProductInCart } from "../types/cart";
 import { SCHEMA_IDS } from "../constants";
-import { NextFunction } from "express";
-import CustomError from "../utils/customError.util";
 
 export const cartSchema = new Schema<ICart>(
   {
