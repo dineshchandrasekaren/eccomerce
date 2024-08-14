@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import PhotoModel from "../models/photo.schema";
-import { ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
+import { AUTH_ROLES, ERROR_MESSAGES, SCHEMA_IDS } from "../constants";
 import UserModel from "../models/user.schema";
 import CustomError from "../utils/customError.util";
 import { cookieToken } from "../utils/cookieToken.util";
@@ -9,7 +9,7 @@ import { isEmail } from "../utils/check.util";
 import mailService from "../services/mail.service";
 import SessionModel from "../models/session.schema";
 import { IUser } from "../types/user";
-import { populate } from "dotenv";
+import crypto from "crypto";
 
 const collectionFor = SCHEMA_IDS.User;
 
@@ -59,7 +59,7 @@ const sendVerifyEmail = async (req: Request, user: IUser) => {
 
 /**********************************************************
  * @AUTH
- * @route https://localhost:5000/auth/verify-email/:token
+ * @route https://localhost:5000/auth/verify-token/:token
  * @param {token}
  * @description used to verify the user email
  *********************************************************/
@@ -86,7 +86,7 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
  * @returns success
  *********************************************************/
 export const signup = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role = AUTH_ROLES.USER } = req.body;
   let emailError;
 
   const existingUser = await UserModel.findOne({ email });
@@ -109,14 +109,18 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   const user = new UserModel({
     name,
     email,
-    password,
+    password:
+      role === AUTH_ROLES.SHOP
+        ? crypto.randomBytes(10).toString("hex")
+        : password,
     photo: photoId,
+    role,
   });
 
   await user.save();
 
   const populatedUser = await user.populate("photo", "url");
-  const token = await populatedUser.emailVerifyToken();
+  await populatedUser.emailVerifyToken();
   emailError = await sendVerifyEmail(req, populatedUser);
   populatedUser.password = "";
   populatedUser.verifyToken = "";
