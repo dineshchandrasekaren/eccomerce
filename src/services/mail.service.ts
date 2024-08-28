@@ -4,7 +4,7 @@ import { getPath } from "../getPath";
 import { renderFile } from "ejs";
 import config from "../config";
 interface TemplateOptions extends MailOptions {
-  fileName?: string; // make sure the file in templates folder
+  fileName?: string;
   payload?: { [key: string]: string };
 }
 
@@ -15,7 +15,7 @@ const mailService = async (
 ) => {
   await transporter.sendMail(
     {
-      from: { name: "Dinesh C", address: config.FROM_EMAIL },
+      from: { name: "Shopie", address: config.FROM_EMAIL },
       ...mailOptions,
       html: fileName
         ? await renderFile(getPath("templates", fileName), payload)

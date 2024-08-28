@@ -8,7 +8,9 @@ import { ERROR_MESSAGES, AUTH_ROLES, SCHEMA_IDS } from "../constants";
 import { IUser, IUserModel } from "../types/user";
 
 const passwordValidator = (password: string) =>
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password);
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(
+    password
+  );
 
 const capitalize = (name: string) =>
   name.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -24,6 +26,41 @@ const UserSchema: Schema<IUser> = new Schema(
       set: capitalize,
       trim: true,
     },
+    username: {
+      type: String,
+      lowercase: true,
+      unique: true, // Enforces uniqueness at the database level
+      validate: [
+        {
+          validator: async function (
+            this: IUser,
+            value: string
+          ): Promise<boolean> {
+            if (this.role === AUTH_ROLES.SHOP && !value) {
+              return false;
+            }
+            return true;
+          },
+          message: "Username is required.",
+        },
+        {
+          validator: async function (
+            this: IUser,
+            value: string
+          ): Promise<boolean> {
+            if (!value) return true;
+            const user = await this.model(SCHEMA_IDS.User).findOne({
+              username: value,
+            });
+            if (user && user._id.toString() !== this._id.toString()) {
+              return false;
+            }
+            return true;
+          },
+          message: "Username already exists.",
+        },
+      ],
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -38,11 +75,12 @@ const UserSchema: Schema<IUser> = new Schema(
     password: {
       type: String,
       required: [true, "password is required"],
-      validate: {
-        validator: passwordValidator,
-        message: (props) =>
-          `${props.value} is not a valid password! Password must contain at least 8 characters, including one number, one uppercase and one lowercase letter.`,
-      },
+      minlength: [8, "Password must be minimum 8 characters"],
+      // validate: {
+      //   validator: passwordValidator,
+      //   message: (props) =>
+      //     `${props.value} is not a valid password! Password must contain at least 8 characters, including one number, one uppercase and one lowercase letter.`,
+      // },
       select: false,
     },
     photo: {
@@ -52,8 +90,10 @@ const UserSchema: Schema<IUser> = new Schema(
     role: {
       type: String,
       default: AUTH_ROLES.USER,
-      enum: [AUTH_ROLES.USER, AUTH_ROLES.ADMIN],
+      enum: [AUTH_ROLES.USER, AUTH_ROLES.ADMIN, AUTH_ROLES.SHOP],
     },
+    about: String,
+    slug: String,
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
     verifyToken: String,
@@ -67,7 +107,8 @@ const UserSchema: Schema<IUser> = new Schema(
   }
 );
 
-UserSchema.index({ email: 1 });
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ username: 1 }, { unique: true });
 
 //Statics
 UserSchema.statics.forgotPasswordHash = async function (token) {

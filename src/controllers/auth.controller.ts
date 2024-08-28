@@ -10,6 +10,7 @@ import mailService from "../services/mail.service";
 import SessionModel from "../models/session.schema";
 import { IUser } from "../types/user";
 import crypto from "crypto";
+import generatePassword from "../utils/passwordGenerator.util";
 
 const collectionFor = SCHEMA_IDS.User;
 
@@ -17,17 +18,17 @@ const getUrl = ({ protocol, headers }: Request) =>
   `${protocol}://${headers.host}`;
 
 async function welcomeTemplate({
-  email,
-  name,
+  user,
+  password,
   url,
 }: {
-  email: string;
-  name: string;
+  user: IUser;
+  password: string;
   url: string;
 }): Promise<string | null> {
   await mailService(
     {
-      to: email,
+      to: user.email,
       subject: "Verify Email",
       cc: "chandrasekarendinesh@gmail.com",
     },
@@ -39,8 +40,10 @@ async function welcomeTemplate({
     {
       fileName: "welcome.ejs",
       payload: {
-        name,
-        email,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        password,
         url,
       },
     }
@@ -48,11 +51,11 @@ async function welcomeTemplate({
   return null;
 }
 
-const sendVerifyEmail = async (req: Request, user: IUser) => {
+const sendVerifyEmail = async (req: Request, user: IUser, password: string) => {
   const token = await user.emailVerifyToken();
   return await welcomeTemplate({
-    email: user.email,
-    name: user.name,
+    user,
+    password,
     url: await `${getUrl(req)}/auth/verify-token/${token}`,
   });
 };
@@ -86,33 +89,74 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
  * @returns success
  *********************************************************/
 export const signup = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password, role = AUTH_ROLES.USER } = req.body;
+  const {
+    username = "",
+    name = "",
+    email = "",
+    password = "",
+    role = AUTH_ROLES.USER,
+  } = req.body;
   let emailError;
 
-  const existingUser = await UserModel.findOne({ email });
+  const existingUsername = username
+    ? await UserModel.findOne({ username })
+    : null;
+
+  // if (existingUsername) {
+  //   throw new CustomError(ERROR_MESSAGES.USERNAME_ALREADY_EXIST, 409);
+  // }
+  const existingUser = await UserModel.findOne({ email }).select("+password");
 
   if (existingUser) {
+    if (
+      role !== AUTH_ROLES.SHOP &&
+      !(await existingUser.comparePassword(password))
+    ) {
+      throw new CustomError(
+        ERROR_MESSAGES.EXIST_USER_PASSWORD_NOT_MATCH,
+        401,
+        "password"
+      );
+    }
+
     if (!existingUser.isVerified) {
-      emailError = await sendVerifyEmail(req, existingUser);
-      throw new CustomError(ERROR_MESSAGES.VERIFY_EMAIL, 401);
+      try {
+        emailError = await sendVerifyEmail(req, existingUser, password);
+      } catch (error) {
+        throw new CustomError(ERROR_MESSAGES.EMAIL_FAILED, 200);
+      }
+      res.status(200).json({
+        success: true,
+        message: "Signup successfully",
+        email: emailError ? emailError : ERROR_MESSAGES.VERIFY_EMAIL,
+      });
+      return;
     }
 
     throw new CustomError(ERROR_MESSAGES.USER_ALREADY_EXIST, 409);
   }
 
-  let photoId = undefined;
+  let photoId = null;
   if (req.files?.photo) {
     photoId = await PhotoModel.createAndSave(req.files.photo, collectionFor);
   }
+  if (
+    password &&
+    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(
+      password
+    )
+  ) {
+    throw new CustomError(ERROR_MESSAGES.NOT_VALID_PASSWORD, 200, "password");
+  }
+  const finalPassword =
+    role === AUTH_ROLES.SHOP ? generatePassword() : password;
+  console.log(finalPassword);
 
-  // Create a new user document with a reference to the photo
   const user = new UserModel({
+    username,
     name,
     email,
-    password:
-      role === AUTH_ROLES.SHOP
-        ? crypto.randomBytes(10).toString("hex")
-        : password,
+    password: finalPassword,
     photo: photoId,
     role,
   });
@@ -121,14 +165,20 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
 
   const populatedUser = await user.populate("photo", "url");
   await populatedUser.emailVerifyToken();
-  emailError = await sendVerifyEmail(req, populatedUser);
+
+  try {
+    emailError = await sendVerifyEmail(req, populatedUser, finalPassword);
+  } catch (error) {
+    throw new CustomError(ERROR_MESSAGES.EMAIL_FAILED, 500);
+  }
+
   populatedUser.password = "";
-  populatedUser.verifyToken = "";
+  populatedUser.verifyToken = undefined;
 
   res.status(200).json({
     success: true,
-    message: "Signup succesfully",
-    email: emailError ? emailError : "email send successfully",
+    message: "Signup successfully",
+    email: emailError ? emailError : ERROR_MESSAGES.VERIFY_EMAIL,
   });
 });
 
@@ -140,18 +190,35 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
  *********************************************************/
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
+
+  let errors: { email?: string; password?: string } = {};
+
+  if (!email) {
+    errors.email = "Email is required";
+  } else if (!/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(email)) {
+    errors.email = "Please enter a valid email e.g., joe@email.com";
+  }
+
+  if (!password) {
+    errors.password = "Password is required";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    res.status(200).json({ success: false, errors });
+    return;
+  }
+
   const user = await UserModel.findOne({ email })
     .populate("photo", "url")
     .select("+password");
+  if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 200);
+
+  if (user && !(await user.comparePassword(password)))
+    throw new CustomError(ERROR_MESSAGES.INVALID_PASSWORD, 200, "password");
   if (user?.verifyToken) {
-    await sendVerifyEmail(req, user);
-    throw new CustomError(ERROR_MESSAGES.VERIFY_EMAIL, 401);
+    await sendVerifyEmail(req, user, password);
+    throw new CustomError(ERROR_MESSAGES.VERIFY_EMAIL, 200);
   }
-  if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 409);
-
-  if (!(await user.comparePassword(password)))
-    throw new CustomError(ERROR_MESSAGES.INVALID_PASSWORD, 409, "password");
-
   user.password = "";
   await cookieToken(res, user);
 });
@@ -183,9 +250,9 @@ export const forgotPassword = asyncHandler(
     let emailError;
     const { email = "" } = req.body;
     if (!(email && isEmail(email)))
-      throw new CustomError(ERROR_MESSAGES.INVALID_EMAIL, 404, "email");
+      throw new CustomError(ERROR_MESSAGES.INVALID_EMAIL, 200, "email");
     const user = await UserModel.findOne({ email });
-    if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
+    if (!user) throw new CustomError(ERROR_MESSAGES.USER_NOT_FOUND, 200);
     const token = await user.getForgotPasswordToken();
     const url = `${getUrl(req)}/auth/password/reset/${token}`;
     await mailService(

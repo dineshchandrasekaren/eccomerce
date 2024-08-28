@@ -113,7 +113,7 @@ table, td { color: #000000; } #u_body a { color: rgb(109, 40, 217); text-decorat
   <!--[if (!mso)&(!IE)]><!--><div style="box-sizing: border-box; height: 100%; padding: 0px;border: 1px solid rgb(236, 231, 245);border-top: 10px solid #ffffff;border-left: 10px solid #ffffff;border-right: 10px solid #ffffff;border-bottom: 10px solid #ffffff;"><!--<![endif]-->
   <div style="border: 1px solid rgb(236, 231, 245);">
     <div style="background-color:hsl(0, 0%, 100%);width:100%;box-shadow: 0px 3px 10px -8px #989898;">
-    <img src="https://res.cloudinary.com/drkfrijp2/image/upload/v1723610786/q2ryqsrefvzhc9vsh4fl.png"/>
+    <img style="height:110%;width: 100%;" src="https://res.cloudinary.com/drkfrijp2/image/upload/f_auto,q_auto/gamdw5xie9iopcywh8ma"/>
     
     </div>
     <table id="u_content_heading_2" style="font-family:'Raleway',sans-serif;margin-top:22px ;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
@@ -173,7 +173,28 @@ table, td { color: #000000; } #u_body a { color: rgb(109, 40, 217); text-decorat
       </tr>
     </tbody>
     </table>
-    
+    <table id="u_content_text_1" style="font-family:'Raleway',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+      <tbody>
+        <tr>
+          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 20px;font-family:'Raleway',sans-serif;" align="left">
+      
+      <div class="v-font-size" style="font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
+        <% if(username){%>
+          
+          <p style="line-height: 140%;">username: <%=username%></p>
+          <% }%>
+          <% if(password){%>
+          
+            <p style="line-height: 140%;">password: <%=password%></p>
+            <% }else{%>
+              <p style="line-height: 140%;font-style: italic;">password: Please check our initial mail for password</p>
+<% } %>
+
+      </div>
+          </td>
+        </tr>
+      </tbody>
+      </table>
     <table id="u_content_button_2" style="font-family:'Raleway',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
     <tbody>
       <tr>
@@ -183,7 +204,7 @@ table, td { color: #000000; } #u_body a { color: rgb(109, 40, 217); text-decorat
     <div align="center">
     <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://unlayer.com" style="height:37px; v-text-anchor:middle; width:179px;" arcsize="11%"  stroke="f" fillcolor="#4c5bdd"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
       <a href="<%=url%>"" target="_blank" class="v-button v-size-width v-font-size" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: rgb(109, 40, 217); border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:32%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
-        <span style="display:block;padding:10px 20px;line-height:120%;">VERIFY EMAIL</span>
+        <span style="display:block;padding:10px 20px;line-height:120%; white-space: nowrap;">VERIFY EMAIL</span>
       </a>
       <!--[if mso]></center></v:roundrect><![endif]-->
     </div>

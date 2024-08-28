@@ -1,6 +1,8 @@
 import { Document, Schema, Model, model, Types } from "mongoose";
 export interface IUser extends Document {
+  _id: Types.ObjectId;
   name: string;
+  username: string;
   email: string;
   photo?: Types.ObjectId;
   password: string;
@@ -8,9 +10,11 @@ export interface IUser extends Document {
   forgotPasswordToken?: string;
   forgotPasswordExpiry?: string;
   purchase: Types.ObjectId[];
+  about: string;
+  slug: string;
   verifyToken?: string;
   isVerified: boolean;
-  comparePassword: (password: string) => Promise<boolean>;
+  comparePassword: (enteredPassword: string) => Promise<boolean>;
   generateToken: () => Promise<string>;
   verifyForgotPasswordToken: () => void;
   getForgotPasswordToken: () => Promise<string>;

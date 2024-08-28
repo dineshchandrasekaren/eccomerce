@@ -20,7 +20,7 @@ async function errorHandler(
     for (const key in errors) {
       validationErrors[key] = errors[key].message;
     }
-    return res.status(400).json({ success: false, errors: validationErrors });
+    return res.status(200).json({ success: false, errors: validationErrors });
   }
 
   // Duplicate key error
@@ -40,7 +40,7 @@ async function errorHandler(
 
   if (error instanceof CustomError) {
     const jsonResponse = error.key
-      ? { success: false, error: { [error.key || "message"]: error.message } }
+      ? { success: false, errors: { [error.key || "message"]: error.message } }
       : { success: false, message: error.message };
     return res.status(error.code).json(jsonResponse);
   }

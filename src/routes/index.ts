@@ -5,6 +5,7 @@ import user from "./user.route";
 import address from "./address.route";
 import product from "./product.route";
 import category from "./category.route";
+import shop from "./shop.route";
 import cart from "./cart.route";
 import { defaultController, test } from "../controllers/notfound.controller";
 const router = Router();
@@ -16,6 +17,7 @@ router.use("/address", address);
 router.use("/product", product);
 router.use("/category", category);
 router.use("/cart", cart);
+router.use("/shop", shop);
 
 // testing routes
 router.post("/tests", test);

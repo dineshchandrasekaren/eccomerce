@@ -2,12 +2,16 @@ export const enum ERROR_MESSAGES {
   // User-related errors
   USER_NOT_FOUND = "User not found",
   USER_ALREADY_EXIST = "User already exists",
+  USERNAME_ALREADY_EXIST = "Username already exists",
   PROVIDE_USERID = "Please provide UserId",
   INVALID_PASSWORD = "Invalid password",
   INVALID_OLD_PASSWORD = "Invalid old password",
   PASSWORD_NOT_MATCH = "Passwords do not match",
+  EXIST_USER_PASSWORD_NOT_MATCH = "User exist and Passwords do not match",
   INVALID_EMAIL = "Invalid email",
-  VERIFY_EMAIL = "Verify your email",
+  NOT_VALID_PASSWORD = "Password must contain at least 8 characters, including one number, one uppercase and one lowercase letter.",
+  VERIFY_EMAIL = "Check mail, Credentials sent successfully",
+  EMAIL_FAILED = "Email Failed",
 
   // Token-related errors
   TOKEN_NOT_FOUND = "Token not found",
